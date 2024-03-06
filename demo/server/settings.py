@@ -138,7 +138,7 @@ PATH_TYPE = {
     'LOCAL': 1,
 }
 
-SERVER_PATH = 'http://127.0.0.1:8000/'
+SERVER_PATH = 'http://8.137.85.0:8000/'
 IMG_DOWNLOAD_PATH = 'files/download/'
 
 OCR_TYPE = (
