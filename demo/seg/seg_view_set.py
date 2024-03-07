@@ -1,4 +1,5 @@
 import cv2
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
@@ -22,7 +23,6 @@ class SegViewSet(ModelViewSet):
     def startSeg(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
 
         print(">>> seg_view_set::startSeg")
         print(">>> seg_img: ", serializer.data)
@@ -36,7 +36,77 @@ class SegViewSet(ModelViewSet):
             return Response(save_path, status=status.HTTP_400_BAD_REQUEST, headers=headers)
 
         save_path = transPath(save_path, PATH_TYPE['LOCAL'])
-        return Response(save_path, status=status.HTTP_201_CREATED, headers=headers)
+        img['url'] = save_path
+        img['quesId'] = -1
+        ser = self.get_serializer(data=img)
+        ser.is_valid(raise_exception=False)
+        self.create(ser)
+        return HttpResponse(save_path, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(methods=['put'], detail=False, url_path='structure')
+    def createStructure(self, request, *args, **kwargs):
+        """
+        接收试卷结构
+        """
+        blocks = request.data['structure']
+        for block in blocks:
+            ser = self.get_serializer(data=block)
+            ser.is_valid(raise_exception=False)
+            self.create(ser)
+        return Response("Done", status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False, url_path='do')
+    def segAll(self, request, *args, **kwargs):
+        data = request.data
+        # 试卷ID
+        paperId = int(data['paperId'])
+        imgs = data['imgs']
+
+        # 查询
+        sql = f"select * from seg_segimg where paper = {paperId}"
+        blocks = SegIMG.objects.raw(sql)
+        print(blocks)
+
+        # 切割
+        for block in blocks:
+            data = block.__dict__
+            for img in imgs:
+                task = {
+                    'img': str(img),
+                    'num': int(data['num']),
+                    'x1': int(data['x1']),
+                    'x2': int(data['x2']),
+                    'y1': int(data['y1']),
+                    'y2': int(data['y2']),
+                    'quesId': int(data['quesId']),
+                    'paper': paperId,
+                    'typ': str(data['typ'])
+                }
+                local_path = segImg(task)
+                url = transPath(local_path, PATH_TYPE['LOCAL'])
+                task['url'] = url
+                ser = self.get_serializer(data=task)
+                ser.is_valid(raise_exception=False)
+                self.create(ser)
+        return HttpResponse("Done", status=status.HTTP_200_OK)
+
+
+def checkPos(x1, x2, y1, y2) -> bool:
+    if x1 > x2 or y1 > y2:
+        return False
+    if x1 < 0 or y1 < 0 or x2 < 0 or y2 < 0:
+        return False
+    return True
+
+
+def mkSavePath(seg_img) -> str:
+    """拼接保存位置"""
+    img_name = str(seg_img['img']).split('/')[-1]
+    img_num = str(seg_img['num'])
+    x1 = str(int(seg_img['x1']))
+    y1 = str(int(seg_img['y1']))
+    path = SAVE_DIR + img_name.split('.')[0] + '_' + img_num + '_' + x1 + '_' + y1 + '.' + img_name.split('.')[1]
+    return path
 
 
 def segImg(seg_img) -> str:
@@ -61,21 +131,3 @@ def segImg(seg_img) -> str:
     # save img
     cv2.imwrite(save_path, cropped)
     return save_path
-
-
-def checkPos(x1, x2, y1, y2) -> bool:
-    if x1 > x2 or y1 > y2:
-        return False
-    if x1 < 0 or y1 < 0 or x2 < 0 or y2 < 0:
-        return False
-    return True
-
-
-def mkSavePath(seg_img) -> str:
-    """拼接保存位置"""
-    img_name = str(seg_img['img']).split('/')[-1]
-    img_num = str(seg_img['num'])
-    x1 = str(int(seg_img['x1']))
-    y1 = str(int(seg_img['y1']))
-    path = SAVE_DIR + img_name.split('.')[0] + '_' + img_num + '_' + x1 + '_' + y1 + '.' + img_name.split('.')[1]
-    return path

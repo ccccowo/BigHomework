@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-surj+lg0&c_jhhf%&#d(lzrqcb^+k$t-j6%n-dxg)67gpsi&hs"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -129,7 +130,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 图片保存路径
-SAVE_DIR = 'upload/imgs/'
+SAVE_DIR = '/root/imark/i-mark/demo/upload/imgs/'
+# SAVE_DIR = 'upload/imgs/'
 
 APPEND_SLASH = False
 
@@ -138,7 +140,8 @@ PATH_TYPE = {
     'LOCAL': 1,
 }
 
-SERVER_PATH = 'http://8.137.85.0:8000/'
+SERVER_PATH = 'http://8.137.85.0:8008/'
+# SERVER_PATH = 'http://127.0.0.1:8000/'
 IMG_DOWNLOAD_PATH = 'files/download/'
 
 OCR_TYPE = (
@@ -176,3 +179,39 @@ print(">>> server.settings:: ERNIE LOADED SUCCESSFULLY √\n")
 
 MSG_LENGTH = 11
 ########################################################################################################################
+
+# 跨域问题解决
+
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+)
+
+# 允许跨域的请求头，可以使用默认值，默认的请求头为:
+# from corsheaders.defaults import default_headers
+# CORS_ALLOW_HEADERS = default_headers
+# 自定义
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Pragma',
+)
+
+# 跨域请求时，是否运行携带cookie，默认为False
+CORS_ALLOW_CREDENTIALS = True
+# 允许所有主机执行跨站点请求，默认为False
+# 如果没设置该参数，则必须设置白名单，运行部分白名单的主机才能执行跨站点请求
+CORS_ORIGIN_ALLOW_ALL = True
+
