@@ -8,7 +8,9 @@ from rest_framework.viewsets import ModelViewSet
 
 from seg.models import SegIMG, IMGSerializer
 from server.settings import SAVE_DIR, PATH_TYPE, SERVER_PATH, IMG_DOWNLOAD_PATH
+from util.db import updateSQL
 from util.img import transPath
+import pandas as pd
 
 
 class SegViewSet(ModelViewSet):
@@ -53,7 +55,7 @@ class SegViewSet(ModelViewSet):
             ser = self.get_serializer(data=block)
             ser.is_valid(raise_exception=False)
             self.create(ser)
-        return Response("Done", status=status.HTTP_200_OK)
+        return Response(blocks, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=False, url_path='do')
     def segAll(self, request, *args, **kwargs):
@@ -61,6 +63,13 @@ class SegViewSet(ModelViewSet):
         # 试卷ID
         paperId = int(data['paperId'])
         imgs = data['imgs']
+        cert = data['cert']
+
+        # 解析文件
+        cert_file = transPath(cert, PATH_TYPE['URL'])
+        df = pd.read_excel(cert_file)
+        df.columns = ['certId', 'stuName']
+        cert_dict = df.to_dict('records')
 
         # 查询
         sql = f"select * from seg_segimg where paper = {paperId}"
@@ -68,9 +77,11 @@ class SegViewSet(ModelViewSet):
         print(blocks)
 
         # 切割
-        for block in blocks:
-            data = block.__dict__
-            for img in imgs:
+        pt = 0
+        resp = []
+        for img in imgs:
+            for block in blocks:
+                data = block.__dict__
                 task = {
                     'img': str(img),
                     'num': int(data['num']),
@@ -79,16 +90,34 @@ class SegViewSet(ModelViewSet):
                     'y1': int(data['y1']),
                     'y2': int(data['y2']),
                     'quesId': int(data['quesId']),
-                    'paper': paperId,
-                    'typ': str(data['typ'])
+                    'paper': int(paperId),
+                    'typ': str(data['typ']),
+                    'certId': str(cert_dict[pt]['certId']),
+                    'stuName': str(cert_dict[pt]['stuName'])
                 }
                 local_path = segImg(task)
                 url = transPath(local_path, PATH_TYPE['LOCAL'])
                 task['url'] = url
+                resp.append(task)
                 ser = self.get_serializer(data=task)
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
-        return HttpResponse("Done", status=status.HTTP_200_OK)
+        return Response(resp, status=status.HTTP_200_OK)
+
+    @action(methods=['patch'], detail=False, url_path='update')
+    def updateID(self, request):
+        data = request.data
+        old = int(data['old'])
+        update = data['update']
+        paper = int(update['paper'])
+        ques = update['ques']
+        resp = []
+        for q in ques:
+            update_sql = f"update seg_segimg set paper = {paper} , quesId = {q} where  num in (select min(num) from seg_segimg where img = 'STRUCTURE' and paper = {old} or quesId = {old})"
+            select_sql = f"select * from seg_segimg where quesId = {q}"
+            resp.append(updateSQL(update_sql, select_sql))
+        print(resp)
+        return Response("Done", status=status.HTTP_200_OK)
 
 
 def checkPos(x1, x2, y1, y2) -> bool:

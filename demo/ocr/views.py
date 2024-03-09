@@ -1,8 +1,11 @@
+import asyncio
+
 import cv2
 import numpy as np
 from PIL.ImageDraw import ImageDraw
 from PIL.ImageFont import ImageFont
 from django.shortcuts import render
+from erniebot_agent.memory import HumanMessage
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -13,6 +16,8 @@ from PIL import Image
 from ocr.models import OCRModel, OCRSerializer
 from server.settings import PATH_TYPE, OCRMachine, FONT_PATH, SAVE_DIR
 from util.img import transPath
+from aibot.views import talk
+from util.prompts import ANSWER, mkAnswerPrompt
 
 
 class OCRViewSet(viewsets.ModelViewSet):
@@ -48,6 +53,22 @@ class OCRViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(data)
         print(">>> ocr data:", data)
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(methods=['put'], detail=False, url_path='ques')
+    def scanQues(self, request):
+        info = request.data.copy()
+        img = info.get('img')
+        if img is None:
+            return Response('BAD IMAGE', status=status.HTTP_400_BAD_REQUEST)
+        result, res_str, local_path = read(img, PATH_TYPE['URL'])
+
+        msgs = [HumanMessage(mkAnswerPrompt(res_str))]
+        resp = asyncio.run(talk(msgs, ANSWER.content, []))
+        data = {
+            'scan': res_str,
+            'ans': str(resp.content)
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 def read(path, path_type):

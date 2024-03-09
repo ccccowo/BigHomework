@@ -130,8 +130,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 图片保存路径
-SAVE_DIR = '/root/imark/i-mark/demo/upload/imgs/'
-# SAVE_DIR = 'upload/imgs/'
+SAVE_DIR = '/root/imark/statics/'
+# SAVE_DIR = 'E:/workspace/iMarkDemo/demo/upload/imgs/'
 
 APPEND_SLASH = False
 
