@@ -31,4 +31,8 @@ class FileDownloadView(APIView):
     def get(self, request, filename, format=None):
         image_path = SAVE_DIR + filename
         image_data = open(image_path, "rb").read()
-        return HttpResponse(image_data, content_type="image/png")
+        file_type = str(filename).split('.')[-1]
+        if file_type in ['jpg', 'jpeg', 'png', 'gif']:
+            return HttpResponse(image_data, content_type="image/"+file_type)
+        else:
+            return HttpResponse(image_data, content_type="application/octet-stream")
