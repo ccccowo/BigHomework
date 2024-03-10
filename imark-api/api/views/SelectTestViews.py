@@ -52,31 +52,53 @@ class ShowQuesByQuesKindIdView(APIView):
         msg="根据题型查询试题成功"
         context={'code':code,'msg':msg,'data':ser.data}
         return Response(context)
-        
-        
-        
-        
-        
-        # ques_objects=models.Ques.objects.filter()
-        # ser=QuesSerializer(instance=ques_objects,many=True)
-        # code=Code.SUCCESS_CODE
-        # msg="查询试题成功"
-        # context={'code':code,'msg':msg,'data':ser.data}
-        # return Response(context)
+
+
+#根据试题id查询试题
+class ShowQuesByQuesIdView(APIView):
+    def get(self,request):
+        find_quesId=request.query_params.dict().get("quesId")
+        find_obj=models.Ques.objects.filter(quesId=find_quesId).first()
+        ser=QuesSerializer(instance=find_obj)
+        code = Code.SUCCESS_CODE
+        msg = "根据试题id查询试题成功"
+        context = {'code': code, 'msg': msg, 'data':ser.data}
+        return Response(context)
+
+#根据考试id查询考试
+class ShowExamByExamIdView(APIView):
+    def get(self,request):
+        find_examId=request.query_params.dict().get("examId")
+        find_obj=models.Exam.objects.filter(examId=find_examId).first()
+        ser=ExamSerializer(instance=find_obj)
+        code = Code.SUCCESS_CODE
+        msg = "根据考试id查询考试成功"
+        context = {'code': code, 'msg': msg, 'data':ser.data}
+        return Response(context)
+
+#根据试卷id查询试卷
+class ShowPaperByPaperIdView(APIView):
+    def get(self,request):
+        find_paperId=request.query_params.dict().get("paperId")
+        find_obj=models.Paper.objects.filter(paperId=find_paperId).first()
+        ser=PaperSerializer(instance=find_obj)
+        code = Code.SUCCESS_CODE
+        msg = "根据试卷id查询试卷试成功"
+        context = {'code': code, 'msg': msg, 'data':ser.data}
+        return Response(context)
+
     
-    
-    
-    
         
-#从数据库中获取数据
-#         # depart_object = models.Depart.objects.all().first()
-#         depart_objects = models.Depart.objects.all()
-#         #转换JSON格式
-#         ser=DepartSerializer(instance=depart_objects,many=True)
-#         # print(ser.data)
-#         #返回
-#         context={'code':100,'data':ser.data}
-#         return Response(context)
+#根据答题id查询答题模型
+class ShowAnswerByAnswerIdView(APIView):
+    def get(self,request):
+        find_answerId=request.query_params.dict().get("answerId")
+        find_obj=models.Answer.objects.filter(answerId=find_answerId).first()
+        ser=AnswerSerializer(instance=find_obj)
+        code = Code.SUCCESS_CODE
+        msg = "根据答题id查询答题模型成功"
+        context = {'code': code, 'msg': msg, 'data':ser.data}
+        return Response(context)
 
 
 
