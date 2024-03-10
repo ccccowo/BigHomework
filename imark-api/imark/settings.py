@@ -36,12 +36,14 @@ INSTALLED_APPS = [
     # 'django.contrib.contenttypes',
     # 'django.contrib.sessions',
     # 'django.contrib.messages',
+    'corsheaders',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -140,3 +142,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'UNAUTHENTICATED_USER': None
 }
+
+
+#允许所有主机跨域访问
+CORS_ORIGIN_ALLOW_ALL = True  # 允许所有host访问
