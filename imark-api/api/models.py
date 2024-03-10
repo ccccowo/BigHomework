@@ -19,7 +19,7 @@ class Role(models.Model):
 
 #试题类型表    单选题 多选题 填空题 图表题 简答题 翻译题 作文题
 class Ques_Kind(models.Model):
-    quesKindId = models.SmallIntegerField(verbose_name='试题类型ID',primary_key=True )
+    quesKindId = models.AutoField(verbose_name='试题类型ID',primary_key=True )
     
     quesKindName = models.CharField(verbose_name='题型名称',max_length=64)
 
@@ -142,10 +142,6 @@ class Mark_result(models.Model):
     TeacherComment = models.CharField(verbose_name='教师意见 ',max_length=255)
     
 
-'''
-    分析结果模型
-'''
-
 #单卷分数表
 class Paper_Score_Sheet(models.Model):
     id = models.CharField(verbose_name='表格 ID',max_length=64,primary_key=True)
@@ -160,8 +156,13 @@ class Paper_Score_Sheet(models.Model):
     detailScores  = models.CharField(verbose_name='得分详情',max_length=255)
     
     finalScore  = models.FloatField(verbose_name='总得分')
-    
-    
+
+
+
+'''
+    分析结果模型
+'''
+
 #基本分析结果分数表（自动计算或自动调用 AI 生成）
 class Analyse(models.Model):
     analyseId  = models.CharField(verbose_name='分析 ID',max_length=64,primary_key=True)

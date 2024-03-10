@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)-b-#=u^o9qns#^v(@50_3+hgz_eblwv!j7-k2a6h=(#4^x&1y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -36,6 +36,10 @@ INSTALLED_APPS = [
     # 'django.contrib.contenttypes',
     # 'django.contrib.sessions',
     # 'django.contrib.messages',
+    # "aibot.apps.AIBotConfig",
+    # "ocr.apps.OcrConfig",
+    # "upload.apps.UploadConfig",
+    # "seg.apps.SegConfig",
     'corsheaders',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
@@ -46,6 +50,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
