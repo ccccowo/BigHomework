@@ -102,6 +102,7 @@ class SegViewSet(ModelViewSet):
                 ser = self.get_serializer(data=task)
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
+            pt += 1
         return Response(resp, status=status.HTTP_200_OK)
 
     @action(methods=['patch'], detail=False, url_path='update')
