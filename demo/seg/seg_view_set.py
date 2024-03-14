@@ -66,10 +66,10 @@ class SegViewSet(ModelViewSet):
         imgs = data['imgs']
         cert = data['cert']
 
-        # 解析文件
+        # 解析文件`
         cert_file = transPath(cert, PATH_TYPE['URL'])
         df = pd.read_excel(cert_file)
-        df.columns = ['certId', 'stuId', 'stuName']
+        df.columns = ["certId", "stuId", "stuName"]
         cert_dict = df.to_dict('records')
         certs = cert_dict
 
@@ -79,12 +79,12 @@ class SegViewSet(ModelViewSet):
 
         try:
             conn = http.client.HTTPSConnection(TWIST_SERVER_PATH, TWIST_SERVER_PORT)
-            payload = json.dumps(certs)
+            payload = json.dumps(certs, ensure_ascii=False)
             headers = {
                 'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
                 'Content-Type': 'application/json',
                 'Accept': '*/*',
-                'Host': TWIST_SERVER_PATH+':'+TWIST_SERVER_PORT,
+                'Host': TWIST_SERVER_PATH + ':' + TWIST_SERVER_PORT,
                 'Connection': 'keep-alive'
             }
             conn.request("POST", "/getStuNum", payload, headers)
@@ -118,6 +118,7 @@ class SegViewSet(ModelViewSet):
                     'paper': str(paperId),
                     'typ': str(data['typ']),
                     'certId': str(cert_dict[pt]['certId']),
+                    'stuId': str(cert_dict[pt]['stuId']),
                     'stuName': str(cert_dict[pt]['stuName'])
                 }
                 local_path = segImg(task)
