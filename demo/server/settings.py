@@ -141,6 +141,8 @@ PATH_TYPE = {
 }
 
 SERVER_PATH = 'http://8.137.85.0:8008/'
+TWIST_SERVER_PATH = 'http://114.132.51.87/'
+TWIST_SERVER_PORT = '8009'
 # SERVER_PATH = 'http://127.0.0.1:8000/'
 IMG_DOWNLOAD_PATH = 'files/download/'
 

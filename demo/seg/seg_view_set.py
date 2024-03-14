@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from seg.models import SegIMG, IMGSerializer
-from server.settings import SAVE_DIR, PATH_TYPE, SERVER_PATH, IMG_DOWNLOAD_PATH
+from server.settings import SAVE_DIR, PATH_TYPE, SERVER_PATH, IMG_DOWNLOAD_PATH, TWIST_SERVER_PATH, TWIST_SERVER_PORT
 from util.db import updateSQL
 from util.img import transPath
 import pandas as pd
@@ -69,8 +69,28 @@ class SegViewSet(ModelViewSet):
         # 解析文件
         cert_file = transPath(cert, PATH_TYPE['URL'])
         df = pd.read_excel(cert_file)
-        df.columns = ['certId', 'stuName']
+        df.columns = ['certId', 'stuId', 'stuName']
         cert_dict = df.to_dict('records')
+        certs = cert_dict
+
+        # 转发
+        import http.client
+        import json
+
+        conn = http.client.HTTPSConnection(TWIST_SERVER_PATH, TWIST_SERVER_PORT)
+        payload = json.dumps(certs)
+        headers = {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            'Content-Type': 'application/json',
+            'Accept': '*/*',
+            'Host': TWIST_SERVER_PATH+':'+TWIST_SERVER_PORT,
+            'Connection': 'keep-alive'
+        }
+        conn.request("POST", "/getStuNum", payload, headers)
+        res = conn.getresponse()
+        data = res.read()
+        print(">>> request twist server >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(data.decode("utf-8"))
 
         # 查询
         sql = f"select * from seg_segimg where paper = '{paperId}'"
