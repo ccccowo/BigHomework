@@ -76,7 +76,6 @@ class SegViewSet(ModelViewSet):
         # 转发
         import http.client
         import json
-
         payload = json.dumps(certs, ensure_ascii=False)
 
         # 查询
