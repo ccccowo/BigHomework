@@ -77,24 +77,7 @@ class SegViewSet(ModelViewSet):
         import http.client
         import json
 
-        try:
-            conn = http.client.HTTPSConnection(TWIST_SERVER_PATH, TWIST_SERVER_PORT)
-            payload = json.dumps(certs, ensure_ascii=False)
-            headers = {
-                'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-                'Content-Type': 'application/json',
-                'Accept': '*/*',
-                'Host': TWIST_SERVER_PATH + ':' + TWIST_SERVER_PORT,
-                'Connection': 'keep-alive'
-            }
-            conn.request("POST", "/getStuNum", payload, headers)
-            res = conn.getresponse()
-            data = res.read()
-            print(">>> request twist server >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-            print(data.decode("utf-8"))
-        except Exception as e:
-            print(">>> request twist server >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-            print(e)
+        payload = json.dumps(certs, ensure_ascii=False)
 
         # 查询
         sql = f"select * from seg_segimg where paper = '{paperId}'"
@@ -103,7 +86,6 @@ class SegViewSet(ModelViewSet):
 
         # 切割
         pt = 0
-        resp = []
         for img in imgs:
             for block in blocks:
                 data = block.__dict__
@@ -124,12 +106,11 @@ class SegViewSet(ModelViewSet):
                 local_path = segImg(task)
                 url = transPath(local_path, PATH_TYPE['LOCAL'])
                 task['url'] = url
-                resp.append(task)
                 ser = self.get_serializer(data=task)
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
             pt += 1
-        return Response(resp, status=status.HTTP_200_OK)
+        return Response(payload, status=status.HTTP_200_OK)
 
     @action(methods=['patch'], detail=False, url_path='update')
     def updateID(self, request):

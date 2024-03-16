@@ -17,7 +17,7 @@ class SegIMG(models.Model):
     typ = models.CharField(max_length=512, verbose_name='type', help_text="文本类型（标题/信息/题目/手写）",
                            choices=tuple(OCR_TYPE), blank=True, default=OCR_TYPE[0][0])
     certId = models.CharField(max_length=32, verbose_name='certId', help_text='所属学生准考证号', blank=True)
-    stuName = models.CharField(max_length=16, verbose_name='certId', help_text='学生姓名', blank=True)
+    stuName = models.CharField(max_length=16, verbose_name='stuName', help_text='学生姓名', blank=True)
     seg_time = models.DateTimeField(auto_now_add=True, verbose_name='time', help_text='分割时间')
 
 
