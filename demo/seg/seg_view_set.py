@@ -73,12 +73,6 @@ class SegViewSet(ModelViewSet):
         cert_dict = df.to_dict('records')
         certs = cert_dict
 
-        # 转发
-        import http.client
-        import json
-
-        payload = json.dumps(certs, ensure_ascii=False)
-
         # 查询
         sql = f"select * from seg_segimg where paper = '{paperId}'"
         blocks = SegIMG.objects.raw(sql)
@@ -112,7 +106,18 @@ class SegViewSet(ModelViewSet):
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
             pt += 1
-        return HttpResponse(payload, status=status.HTTP_200_OK)
+
+        # 转发
+        import http.client
+        import json
+
+        load = {
+            "cert": certs,
+            "ans": resp
+        }
+        data = json.dumps(load, ensure_ascii=False)
+
+        return HttpResponse(data, status=status.HTTP_200_OK)
 
     @action(methods=['patch'], detail=False, url_path='update')
     def updateID(self, request):
