@@ -76,6 +76,7 @@ class SegViewSet(ModelViewSet):
         # 转发
         import http.client
         import json
+
         payload = json.dumps(certs, ensure_ascii=False)
 
         # 查询
@@ -85,6 +86,7 @@ class SegViewSet(ModelViewSet):
 
         # 切割
         pt = 0
+        resp = []
         for img in imgs:
             for block in blocks:
                 data = block.__dict__
@@ -105,6 +107,7 @@ class SegViewSet(ModelViewSet):
                 local_path = segImg(task)
                 url = transPath(local_path, PATH_TYPE['LOCAL'])
                 task['url'] = url
+                resp.append(task)
                 ser = self.get_serializer(data=task)
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
@@ -124,7 +127,7 @@ class SegViewSet(ModelViewSet):
             select_sql = f"select * from seg_segimg where quesId = '{q}';"
             resp.append(updateSQL(update_sql, select_sql))
         print(resp)
-        return HttpResponse("Done", status=status.HTTP_200_OK)
+        return Response("Done", status=status.HTTP_200_OK)
 
 
 def checkPos(x1, x2, y1, y2) -> bool:
