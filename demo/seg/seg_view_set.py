@@ -125,7 +125,7 @@ class SegViewSet(ModelViewSet):
             select_sql = f"select * from seg_segimg where quesId = '{q}';"
             resp.append(updateSQL(update_sql, select_sql))
         print(resp)
-        return Response("Done", status=status.HTTP_200_OK)
+        return HttpResponse("Done", status=status.HTTP_200_OK)
 
 
 def checkPos(x1, x2, y1, y2) -> bool:
