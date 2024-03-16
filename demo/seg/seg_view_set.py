@@ -110,7 +110,7 @@ class SegViewSet(ModelViewSet):
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
             pt += 1
-        return Response(payload, status=status.HTTP_200_OK)
+        return HttpResponse(payload, status=status.HTTP_200_OK)
 
     @action(methods=['patch'], detail=False, url_path='update')
     def updateID(self, request):
