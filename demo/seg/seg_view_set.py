@@ -74,7 +74,7 @@ class SegViewSet(ModelViewSet):
         certs = cert_dict
 
         # 查询
-        sql = f"select * from seg_segimg where paper = '{paperId}'"
+        sql = f"select * from seg_segimg where paper = '{paperId}' and img = 'STRUCTURE';"
         blocks = SegIMG.objects.raw(sql)
         print(blocks)
 
