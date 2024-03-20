@@ -128,7 +128,7 @@ class SegViewSet(ModelViewSet):
         ques = update['ques']
         resp = []
         for q in ques:
-            update_sql = f"update seg_segimg set paper = '{paper}' , quesId = '{q}' where  num in (select min(num) from seg_segimg where img = 'STRUCTURE' and paper = '{old}' or quesId = '{old}');"
+            update_sql = f"update seg_segimg set paper = '{paper}' , quesId = '{q}' where (  paper = '{old}' or quesId = '{old}' ) and  num in (select min(num) from seg_segimg where img = 'STRUCTURE' and paper = '{old}' or quesId = '{old}');"
             select_sql = f"select * from seg_segimg where quesId = '{q}';"
             resp.append(updateSQL(update_sql, select_sql))
         print(resp)
