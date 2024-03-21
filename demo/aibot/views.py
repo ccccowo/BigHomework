@@ -116,7 +116,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
             '\t', '').replace('\\', '').replace(' ', '')
         resp = resp.split('```json')[1].split('```')[0]
         print(">>> resps:", resp)
-        return Response(resp, content_type='application/json', status=status.HTTP_200_OK)
+        return HttpResponse(resp, content_type='application/json', status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=False, url_path='mark')
     def mkMark(self, request):
