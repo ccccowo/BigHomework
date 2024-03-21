@@ -114,7 +114,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
         msgs = [HumanMessage(mkCommentPrompt(ques, ans, crt, cnt))]
         resp = asyncio.run(talk(msgs, COMMENT.content, [])).content.replace('\n', '').replace('\r', '').replace(
                 '\t', '')
-
+        resp = resp.split('```json ')[1].split(' ```')[0]
         print(">>> resps:", resp)
         return Response(resp, content_type='application/json', status=status.HTTP_200_OK)
 
