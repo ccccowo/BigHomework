@@ -113,7 +113,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
             crt = str(data['correct'])  # 参考答案
         msgs = [HumanMessage(mkCommentPrompt(ques, ans, crt, cnt))]
         resp = asyncio.run(talk(msgs, COMMENT.content, [])).content.replace('\n', '').replace('\r', '').replace(
-            '\t', '').replace('/', '').replace(' ', '')
+            '\t', '').replace('\\', '').replace(' ', '')
         resp = resp.split('```json')[1].split('```')[0]
         print(">>> resps:", resp)
         return Response(resp, content_type='application/json', status=status.HTTP_200_OK)
