@@ -114,7 +114,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
         msgs = [HumanMessage(mkCommentPrompt(ques, ans, crt, cnt))]
         resp = asyncio.run(talk(msgs, COMMENT.content, [])).content.replace('\n', '').replace('\r', '').replace(
                 '\t', '')
-        resp = resp.split('```json ')[1].split(' ```')[0]
+        resp = resp.split('```json')[1].split('```')[0]
         print(">>> resps:", resp)
         return Response(resp, content_type='application/json', status=status.HTTP_200_OK)
 
@@ -131,8 +131,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
         msgs = [HumanMessage(mkMarkPrompt(ques, ans, crt, full))]
         resp = ''
         while '```json ' not in resp:
-            resp = asyncio.run(talk(msgs, MARK.content, [])).content.replace('\n', ' ').replace('\r', ' ').replace('\t',
-                                                                                                                   ' ')
+            resp = asyncio.run(talk(msgs, MARK.content, [])).content.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
         resp = resp.split('```json ')[1].split(' ```')[0]
         print(">>> resp:", resp)
         return HttpResponse(resp, content_type='application/json', status=status.HTTP_200_OK)
@@ -175,3 +174,6 @@ def getNum(sysId) -> int:
     if latest is not None:
         num = latest + 1
     return num
+
+
+
