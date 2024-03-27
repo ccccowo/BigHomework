@@ -73,43 +73,34 @@ class AddQuesView(APIView):
             data={}
             context={'code':code,'msg':msg,'data':data}
         return Response(context)
-            
-   
+
 
 
 #添加准考证
 class AddCertifyView(APIView):
     def post(self,request):
-        ser=CertifySerializer(data=request.data)
-        if ser.is_valid():
-            #序列化验证通过，数据类型正确
-            after_data = ser.validated_data  #将通过验证的json数据转化为字典
-            new_certId=after_data.get("certId")
-            new_obj=models.Certify.objects.filter(certId=new_certId).first()  
-            if not new_obj :
-                #判断该考试是否存在
-                get_examId=after_data.get("examId")
-                ifExam=models.Exam.objects.filter(examId=get_examId).first()
-                if not ifExam:
-                    msg='该考试不存在'
-                    code=Code.ERROR_CODE
-                else:
-                    ser.save()   #保存到数据库
-                    msg='准考证添加成功'
-
-                    code=Code.SUCCESS_CODE   
-                    after_data["examName "]=ifExam.examName
-            else:
-                msg='该准考证已存在'
-                code=Code.ERROR_CODE
-            context={'code':code,'msg':msg,'data':after_data} 
-        else:
-            #序列化验证失败，数据不正确
-            msg= ser.errors
+        examId=request.data["examId"]
+        ex_obj=models.Exam.objects.filter(examId=examId).first()
+        if not ex_obj:
             code=Code.ERROR_CODE
+            msg="该examId对应的考试不存在，请检查examId"
             data={}
-            context={'code':code,'msg':msg,'data':data}
-        return Response(context)  
+        else:
+            certs = request.data["certs"]
+            for cer in certs:
+                obj = models.Certify()
+                obj.examId = examId
+                obj.certId = cer["certId"]
+                obj.stuId = cer["stuId"]
+                obj.stuName = cer["stuName"]
+                obj.save()
+            code = Code.SUCCESS_CODE
+            msg = '准考证添加成功'
+            data=request.data
+        context = {'code': code, 'msg': msg, 'data': data}
+        return Response(context)
+
+
 
 
 #添加试卷
@@ -120,25 +111,20 @@ class AddPaperView(APIView):
             #序列化验证通过，数据类型正确
             after_data = ser.validated_data  #将通过验证的json数据转化为字典
             new_paperName=after_data.get("paperName")
+            new_quesIds=after_data["quesIds"].replace('[','').replace(']','').split(',')
+            new_quesKindIds = after_data["quesKindIds"].replace('[', '').replace(']', '').split(',')
             new_obj = models.Paper.objects.filter(paperName=new_paperName).first()
             if not new_obj : #若该试卷不存在
                 new_paperId = uuid.uuid1()
                 #获取试卷题型结构
-                quesKindIds=[]  #试卷结构list
                 quesKindName=[]   #试卷题型list
-                for quesKindId_paper in list(after_data.get("quesKindIds")):
-                    if (quesKindId_paper != ',') and (quesKindId_paper != '[') and (quesKindId_paper != ']'):
-                        quesKindIds.append(quesKindId_paper)
-                        if models.Ques_Kind.objects.filter(quesKindId=quesKindId_paper).first().quesKindName not in quesKindName:
-                            quesKindName.append(models.Ques_Kind.objects.filter(quesKindId=quesKindId_paper).first().quesKindName)
-
+                for quesKindId_paper in new_quesKindIds:
+                    if models.Ques_Kind.objects.filter(quesKindId=quesKindId_paper).first().quesKindName not in quesKindName:
+                        quesKindName.append(models.Ques_Kind.objects.filter(quesKindId=quesKindId_paper).first().quesKindName)
                 #获取试卷包含试题
-                quesIds=[]
                 flag=True
                 erro_ques=""
-                for quesId_paper in list(after_data.get("quesIds")):
-                    if (quesId_paper != ',') and (quesId_paper != '[') and (quesId_paper != ']'):
-                        quesIds.append(quesId_paper)
+                for quesId_paper in new_quesIds:
                         if not models.Ques.objects.filter(quesId=quesId_paper).first():
                             erro_ques = quesId_paper
                             flag=False
@@ -148,12 +134,15 @@ class AddPaperView(APIView):
                     data=after_data
                 else:
                     after_data["paperId"] = str(new_paperId)
+                    after_data["paperStasus"]=0
                     n_ser=PaperSerializer(data=after_data)
                     if n_ser.is_valid():
                         n_ser.save() #保存到数据库
                         msg='试卷添加成功'
                         code=Code.SUCCESS_CODE
                         after_data["quesKindNames"]=quesKindName
+                        after_data["quesKindIds"]=new_quesKindIds
+                        after_data["quesIds"]=new_quesIds
                         data=after_data
                     else:
                         msg=n_ser.errors
@@ -173,6 +162,28 @@ class AddPaperView(APIView):
             data={}
             context = {'code': code, 'msg': msg, 'data': data}
         return Response(context)
+
+
+#根据试卷id修改试卷状态
+class UpdatePaperStatus(APIView):
+    def get(self, request):
+        paperId = request.query_params.dict().get("paperId")
+        paperStasus = request.query_params.dict().get("paperStasus")
+        pap_obj=models.Paper.objects.filter(paperId=paperId).first()
+        if not pap_obj:
+            code = Code.ERROR_CODE
+            msg = '该paperId对应的试卷不存在，请检查paperId'
+            data = {}
+        else:
+            models.Paper.objects.filter(paperId=paperId).update(paperStasus=paperStasus)
+            ser=PaperSerializer(instance=models.Paper.objects.filter(paperId=paperId).first())
+            code = Code.SUCCESS_CODE
+            msg='修改试卷状态成功'
+            data=ser.data
+        context = {'code': code, 'msg': msg, 'data': data}
+        return Response(context)
+
+
 
 
         
@@ -207,6 +218,7 @@ class AddAnswerView(APIView):
                     after_data['answerId']=new_answerId
                     after_ser=AnswerSerializer(data=after_data)
                     if after_ser.is_valid():
+                        models.Exam.objects.filter(examId=new_examId).update(hasAnswers=1)
                         after_ser.save()
                         paperName=models.Paper.objects.filter(paperId=new_paperId).first().paperName
                         after_ser.validated_data["paperName"]=paperName
@@ -217,7 +229,7 @@ class AddAnswerView(APIView):
                         msg=after_ser.errors
                         code=Code.ERROR_CODE
                         data=after_ser.data
-                    context = {'code': code, 'msg': msg, 'data': data}
+                context = {'code': code, 'msg': msg, 'data': data}
 
             else:
                 o_answerId=new_obj.answerId
@@ -237,9 +249,48 @@ class AddAnswerView(APIView):
         return Response(context)  
 
 
+#更改考试试卷的答卷上传状态
+class ExamChangeHasAnswerView(APIView):
+    def get(self,request):
+        examId = request.query_params.dict().get("examId")
+        examStatus = request.query_params.dict().get("status")
+        ex_obj = models.Exam.objects.filter(examId=examId).first()
+        if not ex_obj:
+            code=Code.ERROR_CODE
+            msg='该examId对应的考试不存在，请检查examId'
+            data={}
+        else:
+            ex_obj.hasAnswers=examStatus
+            ex_obj.save()
+            code=Code.SUCCESS_CODE
+            msg='修改考试试卷的答卷状态成功'
+            ser=ExamSerializer(instance=ex_obj)
+            data=ser.data
+        context = {'code': code, 'msg': msg, 'data': data}
+        return Response(context)
 
 
-#添加考试
+
+
+
+
+#添加考试(躯壳)
+class AddExambeforeView(APIView):
+    def get(self,request):
+        examId = str(uuid.uuid1())
+        exam = models.Exam()
+        exam.examId = examId
+        exam.examName =''
+        exam.paperIds=''
+        exam.examTimes=''
+        exam.save()
+        code=Code.SUCCESS_CODE
+        msg='添加考试外壳成功'
+        ser=ExamSerializer(instance=exam)
+        context={'code':code,'msg':msg,'data':ser.data}
+        return Response(context)
+
+#添加考试（内容）
 class AddExamView(APIView):
     def post(self,request):
         ser=ExamSerializer(data=request.data)
@@ -248,28 +299,31 @@ class AddExamView(APIView):
             after_data = ser.validated_data  #将通过验证的json数据转化为字典
             new_examName = after_data.get("examName")
             new_obj=models.Exam.objects.filter(examName=new_examName).first()
+            new_paperIds = after_data["paperIds"].replace('[', '').replace(']', '').split(',')
             if not new_obj :
                 #获取使用的试卷
-                paperIds=[]  #使用试卷ID-->list
                 paperNames=[]  #使用试卷Name-->list
-                for paperId_paper in list(after_data.get("paperIds")):
-                    if (paperId_paper != ',') and (paperId_paper != '[') and (paperId_paper != ']'):
-                        paperIds.append(paperId_paper)
-                        if models.Paper.objects.filter(paperId=paperId_paper).first().paperName not in paperNames:
-                            paperNames.append(models.Paper.objects.filter(paperId=paperId_paper).first().paperName)   
-                examId=str(uuid.uuid1())
-                after_data["examId"]=examId
-                after_ser=ExamSerializer(data=after_data)
-                if after_ser.is_valid():
-                    after_ser.save()
+                for paperId_paper in new_paperIds:
+                    paperNames.append(models.Paper.objects.filter(paperId=paperId_paper).first().paperName)
+                examId=after_data.get("examId")
+                ex_obj=models.Exam.objects.filter(examId=examId).first()
+                if not ex_obj:
+                    code=Code.ERROR_CODE
+                    msg='该examId对应的考试不存在，请检查examId'
+                    data={}
+                else:
+                    ex_obj.examName=new_examName
+                    ex_obj.paperIds=after_data.get("paperIds")
+                    ex_obj.examTimes=after_data.get("examTimes")
+                    ex_obj.hasAnswers=0
+                    ex_obj.save()
+
                     code = Code.SUCCESS_CODE
                     msg = '新增考试成功'
-                    after_ser.validated_data["paperNames"] = paperNames
-                    data=after_ser.validated_data
-                else:
-                    msg = ser.errors
-                    code = Code.ERROR_CODE
-                    data = {}
+                    after_data["paperNames"] = paperNames
+                    after_data["paperIds"]=new_paperIds
+                    after_data["hasAnswers"]=ex_obj.hasAnswers
+                    data=after_data
                 context = {'code': code, 'msg': msg, 'data': data}
             else:
                 msg='该考试已存在,请更改考试名称'
@@ -279,5 +333,20 @@ class AddExamView(APIView):
             #序列化验证失败，数据不正确
             msg= ser.errors
             code=Code.ERROR_CODE
-            context={'code':code,'msg':msg,'data':''}
-        return Response(context)  
+            context={'code':code,'msg':msg,'data':{}}
+        return Response(context)
+
+
+#添加考试（取消）
+class AddExamCancelView(APIView):
+    def delete(self,request):
+        exId=request.query_params.dict().get("examId")
+        ex_obj=models.Exam.objects.filter(examId=exId).first()
+        ser = ExamSerializer(instance=ex_obj)
+        ex_obj.delete()
+        code=Code.SUCCESS_CODE
+        msg='取消添加考试成功'
+        context = {'code': code, 'msg': msg, 'data': ser.data}
+        return Response(context)
+
+

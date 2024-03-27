@@ -36,6 +36,7 @@ class CertifySerializer(serializers.ModelSerializer):
 #试卷表序列化器
 class PaperSerializer(serializers.ModelSerializer):
     paperId = serializers.CharField(required=False)
+    paperStasus=serializers.IntegerField(required=False)
     class Meta:
         model=models.Paper
         fields="__all__"  
@@ -43,6 +44,7 @@ class PaperSerializer(serializers.ModelSerializer):
 #考试表序列化器
 class ExamSerializer(serializers.ModelSerializer):
     examId = serializers.CharField(required=False)
+    hasAnswers = serializers.CharField(required=False)
     class Meta:
         model=models.Exam
         fields="__all__"  

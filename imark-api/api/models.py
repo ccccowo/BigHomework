@@ -2,16 +2,18 @@ from django.db import models
 
 #用户账号信息表
 class Role(models.Model):
-    roleId = models.CharField(verbose_name='工号',max_length=64)
+    roleId = models.CharField(verbose_name='工号',max_length=64)    #用于登录
     
-    sysId = models.CharField(verbose_name='系统 ID',max_length=64,primary_key=True)  #主键
+    sysId = models.CharField(verbose_name='系统 ID',max_length=64,primary_key=True)  #主键   唯一 用于分配阅卷任务
     
     username = models.CharField(verbose_name='用户名',max_length=32)
+
+    password = models.CharField(verbose_name='登录密码',max_length=64)
     
     avatar  = models.CharField(verbose_name='头像',max_length=255,default='https://tse2-mm.cn.bing.net/th/id/OIP-C.Bb-rbUYwAPIHdXKILp7T5wHaHa?w=188&h=188&c=7&r=0&o=5&dpr=1.3&pid=1.7')  #图片URL
  
  
- 
+
 '''
     考试模型
 '''
@@ -54,6 +56,10 @@ class Paper(models.Model):
     quesKindIds   = models.CharField(verbose_name='试卷结构 ',max_length=255)
     
     quesIds   = models.CharField(verbose_name='包含试题',max_length=255)
+
+    paperStasus = models.IntegerField(verbose_name='试卷状态',default=0)
+
+
     
    
     
@@ -64,7 +70,7 @@ class Certify(models.Model):
     examId = models.CharField(verbose_name='考试 ID ',max_length=64)
     
     certId = models.CharField(verbose_name='准考证号',max_length=64,null=True,blank=True)
-    
+
     stuId = models.CharField(verbose_name='学号 ',max_length=64)
     
     stuName = models.CharField(verbose_name='姓名',max_length=64)
@@ -77,9 +83,14 @@ class Exam(models.Model):
     
     examName = models.CharField(verbose_name='考试名称',max_length=64)
     
-    paperIds = models.CharField(verbose_name='使用试卷',max_length=64)
+    paperIds = models.CharField(verbose_name='使用试卷',max_length=255)
     
-    examTimes = models.CharField(verbose_name='考试时间',max_length=64)
+    examTimes = models.CharField(verbose_name='考试时间',max_length=255)
+
+    hasAnswers = models.IntegerField(verbose_name="上传答卷状态", default=0)
+    # 该考试试卷上传答卷状态
+    # 0是未上传 （默认）  1上传  2未批 3已批改
+
     
     
     

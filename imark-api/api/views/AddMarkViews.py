@@ -21,6 +21,7 @@ class AddMarkView(APIView):
             fid_paperObj=models.Paper.objects.filter(paperId=after_data.get("paperId")).first() #查询该考试试卷是否存在
             fid_examObj=models.Exam.objects.filter(examId=after_data.get("examId")).first()
             fid_mark=models.Mark.objects.filter(paperId=after_data.get("paperId"),examId=after_data.get("examId")).first()
+            taskAllos=after_data.get("taskAllos").replace('[','').replace(']','').split(',')
             if not fid_paperObj:
                 code=Code.ERROR_CODE
                 msg='添加阅卷任务失败,试卷不存在'
@@ -34,16 +35,6 @@ class AddMarkView(APIView):
                 msg = '添加阅卷任务失败,该阅卷任务已经存在，请勿重复添加'
                 data = after_data
             else:
-                ##############################################################
-                # #获取阅卷老师系统id  -->存入markTeacher，若要校验判断在此添加
-                
-                # markTeacher=[]   #阅卷老师系统id-->list
-                # for markTeacherid in list(after_data.get("taskAllos")):
-                #     if (markTeacherid != ',') and (markTeacherid != '[') and (markTeacherid != ']'):
-                #         markTeacher.append(markTeacherid)
-                        
-                # print(markTeacher)
-                ###############################################################
                 new_mark=models.Mark()
                 markId=str(uuid.uuid1())
                 new_mark.markId=markId
@@ -54,6 +45,7 @@ class AddMarkView(APIView):
                 code=Code.SUCCESS_CODE
                 msg="添加阅卷任务成功"
                 after_data["markId"]=markId
+                after_data["taskAllos"]=taskAllos
                 data=after_data
             context={'code':code,'msg':msg,'data':data}
         else:
