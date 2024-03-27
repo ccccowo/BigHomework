@@ -111,15 +111,12 @@ class AIBotViewSet(viewsets.ModelViewSet):
         ans = str(data['answer'])  # 学生作答
         if 'crt' in data.keys():
             crt = str(data['correct'])  # 参考答案
-        msgs = [HumanMessage(mkCommentPrompt(ques, ans, crt))]
-        resps = []
-        for i in range(cnt):
-            resp = asyncio.run(talk(msgs, COMMENT.content, [])).content.replace('\n', '').replace('\r', '').replace(
-                '\t', '')
-            resps.append(resp)
-
-        print(">>> resps:", resps)
-        return Response(resps, content_type='application/json', status=status.HTTP_200_OK)
+        msgs = [HumanMessage(mkCommentPrompt(ques, ans, crt, cnt))]
+        resp = asyncio.run(talk(msgs, COMMENT.content, [])).content.replace('\n', '').replace('\r', '').replace(
+            '\t', '').replace('\\', '').replace(' ', '')
+        resp = resp.split('```json')[1].split('```')[0]
+        print(">>> resps:", resp)
+        return HttpResponse(resp, content_type='application/json', status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=False, url_path='mark')
     def mkMark(self, request):

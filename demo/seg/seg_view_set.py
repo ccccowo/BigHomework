@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from seg.models import SegIMG, IMGSerializer
-from server.settings import SAVE_DIR, PATH_TYPE, SERVER_PATH, IMG_DOWNLOAD_PATH
+from server.settings import SAVE_DIR, PATH_TYPE, SERVER_PATH, IMG_DOWNLOAD_PATH, TWIST_SERVER_PATH, TWIST_SERVER_PORT
 from util.db import updateSQL
 from util.img import transPath
 import pandas as pd
@@ -39,7 +39,8 @@ class SegViewSet(ModelViewSet):
 
         save_path = transPath(save_path, PATH_TYPE['LOCAL'])
         img['url'] = save_path
-        img['quesId'] = -1
+        img['quesId'] = 'unknown'
+        img['paper'] = 'unknown'
         ser = self.get_serializer(data=img)
         ser.is_valid(raise_exception=False)
         self.create(ser)
@@ -61,18 +62,19 @@ class SegViewSet(ModelViewSet):
     def segAll(self, request, *args, **kwargs):
         data = request.data
         # 试卷ID
-        paperId = int(data['paperId'])
+        paperId = str(data['paperId'])
         imgs = data['imgs']
         cert = data['cert']
 
-        # 解析文件
+        # 解析文件`
         cert_file = transPath(cert, PATH_TYPE['URL'])
         df = pd.read_excel(cert_file)
-        df.columns = ['certId', 'stuName']
+        df.columns = ["certId", "stuId", "stuName"]
         cert_dict = df.to_dict('records')
+        certs = cert_dict
 
         # 查询
-        sql = f"select * from seg_segimg where paper = {paperId}"
+        sql = f"select * from seg_segimg where paper = '{paperId}' and img = 'STRUCTURE';"
         blocks = SegIMG.objects.raw(sql)
         print(blocks)
 
@@ -89,10 +91,11 @@ class SegViewSet(ModelViewSet):
                     'x2': int(data['x2']),
                     'y1': int(data['y1']),
                     'y2': int(data['y2']),
-                    'quesId': int(data['quesId']),
-                    'paper': int(paperId),
+                    'quesId': str(data['quesId']),
+                    'paper': str(paperId),
                     'typ': str(data['typ']),
                     'certId': str(cert_dict[pt]['certId']),
+                    'stuId': str(cert_dict[pt]['stuId']),
                     'stuName': str(cert_dict[pt]['stuName'])
                 }
                 local_path = segImg(task)
@@ -103,19 +106,30 @@ class SegViewSet(ModelViewSet):
                 ser.is_valid(raise_exception=False)
                 self.create(ser)
             pt += 1
-        return Response(resp, status=status.HTTP_200_OK)
+
+        # 转发
+        import http.client
+        import json
+
+        load = {
+            "cert": certs,
+            "ans": resp
+        }
+        data = json.dumps(load, ensure_ascii=False)
+
+        return HttpResponse(data, status=status.HTTP_200_OK)
 
     @action(methods=['patch'], detail=False, url_path='update')
     def updateID(self, request):
         data = request.data
-        old = int(data['old'])
+        old = str(data['old'])
         update = data['update']
-        paper = int(update['paper'])
+        paper = str(update['paper'])
         ques = update['ques']
         resp = []
         for q in ques:
-            update_sql = f"update seg_segimg set paper = {paper} , quesId = {q} where  num in (select min(num) from seg_segimg where img = 'STRUCTURE' and paper = {old} or quesId = {old})"
-            select_sql = f"select * from seg_segimg where quesId = {q}"
+            update_sql = f"update seg_segimg set paper = '{paper}' , quesId = '{q}' where (  paper = '{old}' or quesId = '{old}' ) and  num in (select min(num) from seg_segimg where img = 'STRUCTURE' and paper = '{old}' or quesId = '{old}');"
+            select_sql = f"select * from seg_segimg where quesId = '{q}';"
             resp.append(updateSQL(update_sql, select_sql))
         print(resp)
         return Response("Done", status=status.HTTP_200_OK)
