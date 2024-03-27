@@ -51,20 +51,135 @@
 
 
 ## 使用示例
+**1. 注册**
 
-**1. 登录**
+进入注册界面，在对应输入框里输入注册用户名，密码以及密码二次确认，点击注册。
 
-**2. 创建考试**
+![user](./md/img/resg.png)
+
+若输入密码长度不满足规则将提示。
+
+![user](./md/img/resf.png)
+
+弹出注册成功提示框，系统自动创建登录账号，该账号作为登录账号且唯一。
+
+![user](./md/img/resok.png)
+
+**2. 登录**
+
+输出注册成功后的账号密码，点击登录。
+
+![user](./md/img/login.png)
+
+登录成功，进入主页面。
+
+![user](./md/img/sucessLog.png)
 
 **3. 录入试卷**
 
-**4. 录入答卷**
+点击录入按钮，进入考试管理界面。
 
-**5. 开始阅卷**
+考试管理界面可以切换试题界面，试卷界面，考试界面。
 
-**6. 生成结果**
+试题界面可以根据题型进行搜索试题以及进行试题的删除操作。
 
-**7. 更多**
+![test](./md/img/testManage.png)
+
+试卷界面可以进行试卷的删除以及试卷的添加。
+
+![test](./md/img/paper.png)
+
+点击试卷添加，可以添加试卷图片；也可以开启演示模式，将默认提供一张试卷。
+
+![test](./md/img/addpaper1.png)
+
+![test](./md/img/addpaper2.png)
+
+点击选择完毕按钮，进入试卷切割界面，用户可以选择批量切割试题。
+
+![test](./md/img/paperkill1.png)
+
+按住鼠标左键选择试题范围进行试题切割。
+
+![test](./md/img/paperkill2.png)
+
+切割完成后弹出切割后的试题列表
+
+![test](./md/img/paperkills.png)
+
+用户点击试题后填出请求文字识别。
+
+![test](./md/img/quesadd1.png)
+
+请求后端ocr识别后，用户可以手动选择题型，对题目分数进行设置，以及对识别内容进行修改。
+
+![test](./md/img/quesadd2.png)
+
+一次点击识别完所有题目后点击添加试卷，设置试卷名称以及全卷总分，点击确定。
+
+![test](./md/img/addexam.png)
+
+添加试卷成功。
+
+![test](./md/img/addexams.png)
+
+**4. 创建考试**
+
+点击考试界面，可以查看存在的考试，考试的状态，以及可以删除考试。
+
+![test](./md/img/index3.png)
+
+点击添加考试，编辑考试名称，月份日期以及选择考试试卷。
+
+![test](./md/img/addtest.png)
+
+![test](./md/img/choicepaper.png)
+
+点击确认，创建考试成功。
+
+![test](./md/img/sucadt.png)
+
+**5. 录入答卷**
+
+点击答卷上传，列表显示已经创建还未上传答卷的考试。
+
+![test](./md/img/qnsindex.png)
+
+点击上传答卷按钮，进行答卷以及准考证号的上传，也可以点击开启演示模式，将默认提供一张答卷和考试准考证。
+
+![test](./md/img/answerid1.png)
+
+答卷上传成功。
+
+![test](./md/img/sucanswerupload.png)
+
+点击分配阅卷任务，设置每道试题阅卷人信息。
+
+![test](./md/img/fenpei.png)
+
+点击提交，阅卷分配成功，考试状态更改。
+
+![test](./md/img/fenpei2.png)
+
+**6. 开始阅卷**
+
+在主页或者侧边导航栏点击阅卷，进入阅卷管理界面。
+
+![mark](./md/img/main2.png)
+
+![mark](./md/img/mark1.png)
+
+点击开始阅卷进入阅卷界面。
+
+![mark](./md/img/mark2.png)
+
+
+
+
+
+**7. 生成结果**
+
+**8. 更多**
 
 
 ## 架构与设计
