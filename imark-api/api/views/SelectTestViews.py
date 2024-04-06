@@ -28,8 +28,17 @@ class ShowAllExamView(APIView):
         msg="查询所有考试成功"
         context={'code':code,'msg':msg,'data':ser.data}
         return Response(context)
-    
-    
+
+#显示所有试卷
+class ShowAllPaperView(APIView):
+    def get(self,request):
+        paper_objects=models.Paper.objects.all()
+        ser=PaperSerializer(instance=paper_objects,many=True)
+        code=Code.SUCCESS_CODE
+        msg="查询所有试卷成功"
+        context={'code':code,'msg':msg,'data':ser.data}
+        return Response(context)
+
 #试卷名称模糊查询   
 class ShowFuzzyPaperByPaperNameView(APIView):
     def get(self,request):
@@ -101,6 +110,56 @@ class ShowAnswerByAnswerIdView(APIView):
         return Response(context)
 
 
+#根据certId和quesId查询答题模型
+class ShowAnswerByCertIdAndQuesIdView(APIView):
+    def get(self,request):
+        certId=request.query_params.dict().get("certId")
+        quesId=request.query_params.dict().get("quesId")
+        find_obj=models.Answer.objects.filter(certId=certId, quesId=quesId).first()
+        if not find_obj:
+            code=Code.ERROR_CODE
+            msg='该cerId和quesId对应的答题模型不存在'
+            data={}
+        else:
+            ser=AnswerSerializer(instance=find_obj)
+            code=Code.SUCCESS_CODE
+            msg='查询答题模型成功'
+            data=ser.data
+        context = {'code': code, 'msg': msg, 'data': ser.data}
+        return Response(context)
+
+
+
+
+#根据hasAnswers分类查询试卷的答卷状态
+class ExamSelectHasAnswerView(APIView):
+    def get(self,request):
+        hasAnswers = request.query_params.dict().get("hasAnswers")
+        ex_objs = models.Exam.objects.filter(hasAnswers=hasAnswers)
+        ser=ExamSerializer(instance=ex_objs,many=True)
+        code = Code.SUCCESS_CODE
+        msg = '查询hasAnswers成功'
+        data = ser.data
+        context = {'code': code, 'msg': msg, 'data': data}
+        return Response(context)
+
+#根据examId查询考试学生
+class ShowCertifyByExamIdView(APIView):
+    def get(self,request):
+        examId=request.query_params.dict().get("examId")
+        ex_obj=models.Exam.objects.filter(examId=examId).first()
+        if not ex_obj:
+            code=Code.ERROR_CODE
+            msg="该examId对应的考试不存在，请检查examId"
+            data={}
+        else:
+            c_objs=models.Certify.objects.filter(examId=examId)
+            ser=CertifySerializer(c_objs,many=True)
+            code=Code.SUCCESS_CODE
+            msg='查询成功'
+            data=ser.data
+        context = {'code': code, 'msg': msg, 'data': data}
+        return Response(context)
 
 
 
@@ -118,18 +177,3 @@ class ShowAnswerByAnswerIdView(APIView):
 
 
 
-
-
-
-
-# class AddExamView(APIView):
-#     def post(self,request):
-#         #从数据库中获取数据
-#         # depart_object = models.Depart.objects.all().first()
-#         depart_objects = models.Depart.objects.all()
-#         #转换JSON格式
-#         ser=DepartSerializer(instance=depart_objects,many=True)
-#         # print(ser.data)
-#         #返回
-#         context={'code':100,'data':ser.data}
-#         return Response(context)
