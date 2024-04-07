@@ -90,8 +90,13 @@ def read(path, path_type):
     # pp ocr
     res_str = ''
     result = OCRMachine.ocr(path, cls=True)
+    if result is None:
+        return ""
+
     for idx in range(len(result)):
         res = result[idx]
+        if res is None:
+            continue
         for line in res:
             if line is not None:
                 res_str += ' ' + line[1][0]
