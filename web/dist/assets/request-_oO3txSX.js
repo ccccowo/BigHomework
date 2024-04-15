@@ -1,1 +1,0 @@
-import{a as r}from"./axios-_sX4vCAy.js";const t=r.create({baseURL:"http://8.137.85.0:8008",timeout:1e11,headers:{}});t.interceptors.request.use(function(e){return e},function(e){return Promise.reject(e)});t.interceptors.response.use(function(e){return e},function(e){return Promise.reject(e)});export{t as i};

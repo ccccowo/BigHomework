@@ -33,9 +33,9 @@ class Ques(models.Model):
     
     quesKindId  = models.IntegerField(verbose_name='题目类型')  
     
-    quesContent  = models.CharField(verbose_name='题目内容',max_length=255)
+    quesContent  = models.TextField(verbose_name='题目内容')
     
-    quesAnswer  = models.CharField(verbose_name='参考答案',max_length=255)
+    quesAnswer  = models.TextField(verbose_name='参考答案',max_length=255)
     
     quesDefaultScore  = models.FloatField(verbose_name='默认分值')
     
@@ -53,9 +53,9 @@ class Paper(models.Model):
     
     paperLevel   = models.DecimalField(verbose_name='全卷难度等级',max_digits=10,decimal_places=2,default=0)
     
-    quesKindIds   = models.CharField(verbose_name='试卷结构 ',max_length=255)
+    quesKindIds   = models.TextField(verbose_name='试卷结构 ')
     
-    quesIds   = models.CharField(verbose_name='包含试题',max_length=255)
+    quesIds   = models.TextField(verbose_name='包含试题')
 
     paperStasus = models.IntegerField(verbose_name='试卷状态',default=0)
 
@@ -83,9 +83,9 @@ class Exam(models.Model):
     
     examName = models.CharField(verbose_name='考试名称',max_length=64)
     
-    paperIds = models.CharField(verbose_name='使用试卷',max_length=255)
-    
-    examTimes = models.CharField(verbose_name='考试时间',max_length=255)
+    paperIds = models.TextField(verbose_name='使用试卷')
+
+    examTimes = models.TextField(verbose_name='考试时间')
 
     hasAnswers = models.IntegerField(verbose_name="上传答卷状态", default=0)
     # 该考试试卷上传答卷状态
@@ -106,9 +106,9 @@ class Answer(models.Model):
     
     quesId   = models.CharField(verbose_name='试题 ID ',max_length=64)
     
-    ansImg   = models.CharField(verbose_name='截取内容',max_length=255)
+    ansImg   = models.TextField(verbose_name='截取内容')
     
-    scanResult   = models.CharField(verbose_name='答题结果',max_length=255)
+    scanResult   = models.TextField(verbose_name='答题结果')
 
 
 
@@ -125,7 +125,7 @@ class Mark(models.Model):
     
     paperId   = models.CharField(verbose_name='所属试卷 ID',max_length=64)
     
-    taskAllos  = models.CharField(verbose_name='任务分配',max_length=255)
+    taskAllos  = models.TextField(verbose_name='任务分配')
 
 
 #按题打分结果模型表
@@ -148,9 +148,9 @@ class Mark_result(models.Model):
     
     TeacherScore = models.FloatField(verbose_name='教师评分 ')
     
-    AIComment = models.CharField(verbose_name='AI 意见 ',max_length=255)
+    AIComment = models.TextField(verbose_name='AI 意见 ')
     
-    TeacherComment = models.CharField(verbose_name='教师意见 ',max_length=255)
+    TeacherComment = models.TextField(verbose_name='教师意见 ')
     
 
 #单卷分数表
@@ -164,7 +164,7 @@ class Paper_Score_Sheet(models.Model):
     certId  = models.CharField(verbose_name='准考证号',max_length=64)
     
     
-    detailScores  = models.CharField(verbose_name='得分详情',max_length=255)
+    detailScores  = models.TextField(verbose_name='得分详情')
     
     finalScore  = models.FloatField(verbose_name='总得分')
 

@@ -20,15 +20,6 @@ from api.views import  AddTestViews,SelectTestViews,AddMarkViews,AnalyseViews,Se
 urlpatterns = [
 
 
-
-
-
-
-
-
-
-
-
     ###################-----用户模块-------############################
 
     #注册
@@ -39,15 +30,6 @@ urlpatterns = [
 
     #修改个人资料
     path('userInfo/update/',UserViews.UserInfoUpdateView.as_view()),
-
-
-
-
-
-
-
-
-
 
 
 
@@ -80,8 +62,6 @@ urlpatterns = [
     path('exam/add/',AddTestViews.AddExamView.as_view()),
     #添加考试(取消)
     path('exam/cancel/',AddTestViews.AddExamCancelView.as_view()),
-
-
 
 
 
@@ -139,9 +119,6 @@ urlpatterns = [
 
 
 
-
-
-
     ###################-----阅卷-------############################
 
 
@@ -168,11 +145,8 @@ urlpatterns = [
 
 
 
-
-
-
     ###################-----分析结果-------############################
     #添加基本分析结果分数
-    path('analyse/normal',AnalyseViews.ScoreAnalyseView.as_view()),
+    path('analyse/normal/',AnalyseViews.ScoreAnalyseView.as_view()),
 
 ]

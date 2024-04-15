@@ -1,1 +1,0 @@
-import{i as r}from"./request2-j_m9nIWH.js";const o=t=>r({url:"/registered/",method:"post",data:t}),s=t=>r({url:"/login/",method:"post",data:t}),a=t=>r({url:"/userInfo/update/",method:"POST",data:t});export{s as l,o as r,a as u};

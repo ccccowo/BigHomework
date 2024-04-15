@@ -125,7 +125,7 @@ class ShowAnswerByCertIdAndQuesIdView(APIView):
             code=Code.SUCCESS_CODE
             msg='查询答题模型成功'
             data=ser.data
-        context = {'code': code, 'msg': msg, 'data': ser.data}
+        context = {'code': code, 'msg': msg, 'data': data}
         return Response(context)
 
 
