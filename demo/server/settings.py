@@ -143,6 +143,7 @@ PATH_TYPE = {
 SERVER_PATH = 'http://8.137.85.0:8008/'
 TWIST_SERVER_PATH = 'http://114.132.51.87/'
 TWIST_SERVER_PORT = '8009'
+
 # SERVER_PATH = 'http://127.0.0.1:8000/'
 IMG_DOWNLOAD_PATH = 'files/download/'
 
@@ -163,7 +164,7 @@ FONT_PATH = 'static/font/song.ttf'
 ########################################################################################################################
 # ERNIE CONNECT
 print("\n>>> server.settings:: ERNIE LOADING --------------------------------------------------------------------")
-os.environ["EB_AGENT_ACCESS_TOKEN"] = "cc64c586e86461091fd77338bebd6a867211bfa2"
+os.environ["EB_AGENT_ACCESS_TOKEN"] = "011ef5cb2ce4c1e743755e948054ea6e8c4d1991"
 os.environ["EB_AGENT_LOGGING_LEVEL"] = "info"
 
 ERNIE_MODEL_NAME = 'ernie-3.5'
