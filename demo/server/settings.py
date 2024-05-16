@@ -164,7 +164,7 @@ FONT_PATH = 'static/font/song.ttf'
 ########################################################################################################################
 # ERNIE CONNECT
 print("\n>>> server.settings:: ERNIE LOADING --------------------------------------------------------------------")
-os.environ["EB_AGENT_ACCESS_TOKEN"] = "011ef5cb2ce4c1e743755e948054ea6e8c4d1991"
+os.environ["EB_AGENT_ACCESS_TOKEN"] = "fa0e4bacb1f0fb856ea1b851c17c67ff31fe5aa1"
 os.environ["EB_AGENT_LOGGING_LEVEL"] = "info"
 
 ERNIE_MODEL_NAME = 'ernie-3.5'
