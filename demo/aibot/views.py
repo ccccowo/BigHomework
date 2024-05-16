@@ -67,7 +67,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
             msgHistory = [HumanMessage(prompt)]
         msgHistory.reverse()
 
-        resp = asyncio.run(talk(msgHistory, ASSISTANT.content, functions))
+        resp = asyncio.run(talk([], ASSISTANT.content, functions))
         print(">>> resp:", resp)
 
         # add ai msg
