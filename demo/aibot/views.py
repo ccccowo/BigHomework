@@ -15,6 +15,7 @@ from ocr.models import OCRModel
 from server.settings import MSG_LENGTH, ERNIE_MODEL
 from util.encoder import Encoder
 from util.prompts import ASSISTANT, mkCommentPrompt, COMMENT, mkMarkPrompt, MARK
+from util.tools import functions
 
 
 class AIBotViewSet(viewsets.ModelViewSet):
@@ -66,7 +67,7 @@ class AIBotViewSet(viewsets.ModelViewSet):
             msgHistory = [HumanMessage(prompt)]
         msgHistory.reverse()
 
-        resp = asyncio.run(talk(msgHistory, ASSISTANT.content, []))
+        resp = asyncio.run(talk(msgHistory, ASSISTANT.content, functions))
         print(">>> resp:", resp)
 
         # add ai msg
