@@ -1,1 +1,0 @@
-import{a as e}from"./axios--miOKxDG.js";const r=e.create({baseURL:"http://8.137.85.0:8008",timeout:1e11,headers:{}});r.interceptors.request.use((function(e){return e}),(function(e){return Promise.reject(e)})),r.interceptors.response.use((function(e){return e}),(function(e){return Promise.reject(e)}));export{r as i};

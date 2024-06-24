@@ -1,1 +1,0 @@
-import{_ as a,j as e,o as s,a as t}from"./index-afE12XCz.js";const o=a({__name:"TestPage",setup:a=>(a,o)=>{const r=e("router-view");return s(),t(r)}},[["__scopeId","data-v-102381fd"]]);export{o as default};
